@@ -58,7 +58,7 @@ def load_state() -> dict[str, Any]:
     try:
         state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
         if not isinstance(state,dict): raise ValueError("state root is not an object")
-        for key, default in (("forecasts",[]),("session_alerts",[]),("volatility_alerts",{}),("daily",{})):
+        for key, default in (("forecasts",[]),("session_alerts",[]),("volatility_alerts",{}),("daily",{}),("paper_positions",{}),("paper_trades",[])):
             state.setdefault(key,default)
         return state
     except (OSError,json.JSONDecodeError,ValueError) as exc:
@@ -207,6 +207,36 @@ def resolve_forecasts(state: dict[str,Any], latest: dict[str,dict[str,Any]], now
         daily_bucket(state,f["created_at"][:10])["signals"].append({"type":"forecast_result","asset":f["asset"],"action":action,"correct":bool(correct),"realized_change_pct":change,"created_at":f["created_at"],"resolved_at":utc_iso(valuation_time)})
     state["forecasts"]=state.get("forecasts",[])[-500:]
 
+def update_paper_trade(state: dict[str,Any], result: dict[str,Any], now: datetime) -> None:
+    """Maintain a virtual position only; this function never sends broker orders."""
+    name=result["asset"]; price=float(result["price"]); action=result["action"]
+    positions=state.setdefault("paper_positions",{})
+    trades=state.setdefault("paper_trades",[])
+    position=positions.get(name)
+    if position:
+        side=position["side"]
+        reason=None
+        if side=="LONG" and price<=float(position["stop_price"]): reason="ATR stop"
+        elif side=="SHORT" and price>=float(position["stop_price"]): reason="ATR stop"
+        elif now>=parse_utc(position["expires_at"]): reason="three-hour time exit"
+        elif side=="LONG" and action=="STRONG SELL": reason="opposite strong signal"
+        elif side=="SHORT" and action=="STRONG BUY": reason="opposite strong signal"
+        if reason:
+            entry=float(position["entry_price"])
+            pnl_pct=((price/entry)-1)*100*(1 if side=="LONG" else -1) if entry else 0.0
+            trades.append({**position,"closed_at":utc_iso(now),"exit_price":price,"pnl_pct":pnl_pct,"exit_reason":reason})
+            positions.pop(name,None)
+    if name not in positions and action in ("STRONG BUY","STRONG SELL"):
+        side="LONG" if action=="STRONG BUY" else "SHORT"
+        distance=float(result["stop_distance"])
+        stop_price=price-distance if side=="LONG" else price+distance
+        positions[name]={"asset":name,"side":side,"entry_price":price,"opened_at":utc_iso(now),
+                         "market_bar_utc":result["bar_time_utc"],"stop_price":stop_price,
+                         "expires_at":utc_iso(now+timedelta(hours=3)),
+                         "risk_budget_usd":float(result["risk_budget_usd"]),
+                         "units_estimate":float(result["position_units_estimate"])}
+    state["paper_trades"]=trades[-500:]
+
 def analyze_all(state: dict[str,Any], now: datetime) -> None:
     headlines=fetch_news(); results={}
     for asset in ASSETS:
@@ -221,6 +251,7 @@ def analyze_all(state: dict[str,Any], now: datetime) -> None:
     resolve_forecasts(state,results,now); urgent=[]
     day=now.date().isoformat()
     for name,r in results.items():
+        update_paper_trade(state,r,now)
         if abs(r["hourly_move_pct"])>=r["threshold"]:
             key=f"{day}:{now.hour:02d}"
             if state.setdefault("volatility_alerts",{}).get(name)!=key:
@@ -246,7 +277,10 @@ def eod_report(state: dict[str,Any], now: datetime) -> None:
     correct=sum(bool(f.get("correct")) for f in directional)
     counts={a:sum(1 for f in daily["signals"] if f.get("type")=="signal" and f.get("action")==a) for a in ("STRONG BUY","STRONG SELL","HOLD")}
     pending=sum(1 for f in state.get("forecasts",[]) if not f.get("resolved") and f.get("created_at","").startswith(day))
-    lines=[f"UTC date: {day}",f"Hourly asset signal records: {sum(counts.values())}",f"STRONG BUY: {counts['STRONG BUY']} | STRONG SELL: {counts['STRONG SELL']} | HOLD: {counts['HOLD']}",f"Resolved directional forecasts: {len(directional)}",f"Directional accuracy: {correct/len(directional)*100:.1f}%" if directional else "Directional accuracy: not enough resolved directional forecasts",f"Pending three-hour forecasts: {pending}",f"Volatility alerts: {len(daily['alerts'])}","","Paper evaluation only; not a broker paper account or evidence of profitability.",f"Generated at {utc_iso(now)}"]
+    closed_trades=[t for t in state.get("paper_trades",[]) if t.get("closed_at","").startswith(day)]
+    paper_pnl=sum(float(t.get("pnl_pct",0)) for t in closed_trades)
+    open_positions=len(state.get("paper_positions",{}))
+    lines=[f"UTC date: {day}",f"Hourly asset signal records: {sum(counts.values())}",f"STRONG BUY: {counts['STRONG BUY']} | STRONG SELL: {counts['STRONG SELL']} | HOLD: {counts['HOLD']}",f"Resolved directional forecasts: {len(directional)}",f"Directional accuracy: {correct/len(directional)*100:.1f}%" if directional else "Directional accuracy: not enough resolved directional forecasts",f"Pending three-hour forecasts: {pending}",f"Virtual paper trades closed: {len(closed_trades)} | summed trade returns (not compounded): {paper_pnl:+.2f}%",f"Virtual positions still open: {open_positions}",f"Volatility alerts: {len(daily['alerts'])}","","Paper simulation only; no broker paper account or live orders.",f"Generated at {utc_iso(now)}"]
     if notify(f"Quant Bot EOD review — {day}","\n".join(lines),3,"memo"): daily["eod_sent"]=True
     for old in sorted(state.get("daily",{}))[:-30]: del state["daily"][old]
 
