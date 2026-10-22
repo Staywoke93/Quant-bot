@@ -132,7 +132,8 @@ def indicators(frame: pd.DataFrame) -> pd.DataFrame:
     delta=close.diff(); gain=delta.clip(lower=0).ewm(alpha=1/14,min_periods=14,adjust=False).mean()
     loss=(-delta.clip(upper=0)).ewm(alpha=1/14,min_periods=14,adjust=False).mean()
     rs=gain/loss.replace(0,np.nan); out["RSI"]=100-100/(1+rs)
-    out.loc[loss.eq(0),"RSI"]=100.0
+    out.loc[loss.eq(0) & gain.gt(0),"RSI"]=100.0
+    out.loc[loss.eq(0) & gain.eq(0),"RSI"]=50.0
     prev=close.shift(1)
     tr=pd.concat([(high-low),(high-prev).abs(),(low-prev).abs()],axis=1).max(axis=1)
     out["ATR"]=tr.rolling(14,min_periods=14).mean()
@@ -197,12 +198,13 @@ def resolve_forecasts(state: dict[str,Any], latest: dict[str,dict[str,Any]], now
     for f in state.get("forecasts",[]):
         if f.get("resolved") or parse_utc(f["expires_at"])>now: continue
         r=latest.get(f["asset"])
-        if not r: continue
+        if not r or parse_utc(r["bar_time_utc"]) < parse_utc(f["expires_at"]): continue
+        valuation_time=parse_utc(r["bar_time_utc"])
         entry=float(f["entry_price"]); change=(float(r["price"])/entry-1)*100 if entry else 0
         action=f["action"]
         correct=(change>0 if action=="STRONG BUY" else change<0 if action=="STRONG SELL" else abs(change)<0.25)
-        f.update({"resolved":True,"resolved_at":utc_iso(now),"exit_price":float(r["price"]),"realized_change_pct":change,"correct":bool(correct)})
-        daily_bucket(state,f["created_at"][:10])["signals"].append({"type":"forecast_result","asset":f["asset"],"action":action,"correct":bool(correct),"realized_change_pct":change,"created_at":f["created_at"],"resolved_at":utc_iso(now)})
+        f.update({"resolved":True,"resolved_at":utc_iso(valuation_time),"exit_price":float(r["price"]),"realized_change_pct":change,"correct":bool(correct)})
+        daily_bucket(state,f["created_at"][:10])["signals"].append({"type":"forecast_result","asset":f["asset"],"action":action,"correct":bool(correct),"realized_change_pct":change,"created_at":f["created_at"],"resolved_at":utc_iso(valuation_time)})
     state["forecasts"]=state.get("forecasts",[])[-500:]
 
 def analyze_all(state: dict[str,Any], now: datetime) -> None:
