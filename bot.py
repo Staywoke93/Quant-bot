@@ -74,10 +74,12 @@ def notify(title: str, message: str, priority: int = 3, tags: str = "chart_with_
     if not NTFY_TOPIC:
         LOG.warning("NTFY_TOPIC is empty; skipped notification")
         return False
+    # HTTP headers must be encodable as Latin-1; ntfy message bodies remain full UTF-8.
+    safe_title = title.encode("ascii", "replace").decode("ascii")[:250]
     try:
         response = requests.post(
             f"{NTFY_SERVER}/{NTFY_TOPIC}", data=message.encode("utf-8"),
-            headers={"Title":title[:250],"Priority":str(max(1,min(5,priority))),"Content-Type":"text/plain; charset=utf-8","User-Agent":UA},
+            headers={"Title":safe_title,"Priority":str(max(1,min(5,priority))),"Content-Type":"text/plain; charset=utf-8","User-Agent":UA},
             timeout=TIMEOUT,
         )
         response.raise_for_status()
@@ -158,7 +160,6 @@ def classify(row: pd.Series, news_score: float) -> tuple[str,int,list[str]]:
     if pd.notna(row.get("volume_ratio")) and float(row["volume_ratio"])>=2: why.append(f"volume spike {float(row['volume_ratio']):.1f}x")
     action="STRONG BUY" if score>=3 else "STRONG SELL" if score<=-3 else "HOLD"
     return action,score,why or ["no strong directional agreement"]
-
 def analyze(asset: dict[str,Any], headlines: list[dict[str,str]]) -> dict[str,Any]:
     df=indicators(get_history(asset["ticker"])).dropna(subset=["SMA50","ATR","momentum_3h_pct"])
     if df.empty: raise ValueError("not enough valid bars for indicators")
