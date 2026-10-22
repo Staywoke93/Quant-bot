@@ -25,14 +25,14 @@ Hosted runners are ephemeral, so the workflow persists `data/state.json` by comm
 ## Setup
 
 1. Ensure repository Actions are enabled.
-2. The GitHub Actions workflow sends notifications to the ntfy topic `Quantz-bot`. The workflow topic is explicitly set in `.github/workflows/trading_bot.yml`.
+2. The GitHub Actions workflow sends notifications to the ntfy topic `Quantz-pro`. The workflow topic is explicitly set in `.github/workflows/trading_bot.yml`.
 3. Optional repository variables: `REFERENCE_EQUITY_USD` (default 10000, used only for illustrative risk estimates) and `RISK_FRACTION` (default 0.005, clamped to 0.1%–2%).
 4. Go to **Actions → Quant Bot market monitor → Run workflow** to test manually.
 5. Inspect Actions logs and your ntfy app; the first run can take several minutes.
 
 ### ntfy topic safety
 
-A topic on public `ntfy.sh` is not a private mailbox: anyone who knows the topic may be able to publish to or subscribe to it unless access controls are configured. The requested `Quantz-bot` topic is configured for the workflow, but this repository is public, so the topic name is visible. Consider a hard-to-guess topic or authenticated/private ntfy setup if privacy matters. Never commit auth tokens.
+A topic on public `ntfy.sh` is not a private mailbox: anyone who knows the topic may be able to publish to or subscribe to it unless access controls are configured. The requested `Quantz-pro` topic is configured for the workflow, but this repository is public, so the topic name is visible. Consider a hard-to-guess topic or authenticated/private ntfy setup if privacy matters. Never commit auth tokens.
 
 ### Local install
 
@@ -62,7 +62,7 @@ python bot.py --mode backtest --csv prices.csv --short-window 20 --long-window 5
 ## Troubleshooting
 
 - **No signals:** data provider may rate-limit or return too few hourly bars; check Actions logs.
-- **No ntfy message:** check that your ntfy app is subscribed to `Quantz-bot`, service availability and the HTTP outcome in workflow logs. Avoid logging private topics or tokens.
+- **No ntfy message:** check that your ntfy app is subscribed to `Quantz-pro`, service availability and the HTTP outcome in workflow logs. Avoid logging private topics or tokens.
 - **Missed session alert:** checks run hourly and cron timing is not guaranteed.
 - **State commit fails:** confirm Actions has contents write permission and repository rules allow workflow commits.
 
