@@ -3,5 +3,7 @@
   "forecasts": [],
   "session_alerts": [],
   "volatility_alerts": {},
-  "daily": {}
+  "daily": {},
+  "paper_positions": {},
+  "paper_trades": []
 }
