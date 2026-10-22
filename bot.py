@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import requests
 import yfinance as yf
+from sklearn.ensemble import RandomForestClassifier
 
 UTC = timezone.utc
 ROOT = Path(__file__).resolve().parent
@@ -147,6 +148,56 @@ def indicators(frame: pd.DataFrame) -> pd.DataFrame:
     else: out["volume_ratio"]=np.nan
     return out
 
+def forecast_features(frame: pd.DataFrame) -> pd.DataFrame:
+    """Past-only features for a separately trained three-hour direction model."""
+    close = frame["Close"].astype(float)
+    features = pd.DataFrame(index=frame.index)
+    features["rsi"] = frame["RSI"]
+    features["trend_20"] = close / frame["SMA20"] - 1
+    features["trend_50"] = frame["SMA20"] / frame["SMA50"] - 1
+    features["momentum_3h_pct"] = frame["momentum_3h_pct"]
+    features["return_1h_pct"] = close.pct_change() * 100
+    features["return_6h_pct"] = close.pct_change(6) * 100
+    features["atr_pct"] = frame["ATR"] / close * 100
+    features["volume_ratio"] = frame["volume_ratio"]
+    return features.replace([np.inf, -np.inf], np.nan)
+
+
+def trained_three_hour_forecast(frame: pd.DataFrame) -> tuple[str, float, str]:
+    """Fit a per-asset supervised model on historical bars and forecast the next 3 hours.
+
+    Labels use the future 3-hour return relative to ATR available at the forecast origin.
+    The final unlabeled row is used only for inference, never training.
+    """
+    features = forecast_features(frame)
+    close = frame["Close"].astype(float)
+    future_return_atr = (close.shift(-3) - close) / frame["ATR"].replace(0, np.nan)
+    labels = pd.Series("HOLD", index=frame.index, dtype="object")
+    labels.loc[future_return_atr >= 0.5] = "STRONG BUY"
+    labels.loc[future_return_atr <= -0.5] = "STRONG SELL"
+    train = features.copy()
+    train["target"] = labels
+    train = train.iloc[:-3].dropna()
+    current = features.iloc[[-1]]
+    if len(train) < 60 or current.isna().any(axis=None):
+        return "HOLD", 0.0, "insufficient clean history; conservative fallback"
+    y = train.pop("target")
+    if y.nunique() < 2:
+        return "HOLD", 0.0, "historical labels contain fewer than two classes"
+    model = RandomForestClassifier(
+        n_estimators=160, max_depth=5, min_samples_leaf=4,
+        class_weight="balanced_subsample", random_state=42, n_jobs=1,
+    )
+    model.fit(train, y)
+    probabilities = model.predict_proba(current)[0]
+    best = int(np.argmax(probabilities))
+    action = str(model.classes_[best])
+    confidence = float(probabilities[best])
+    if action != "HOLD" and confidence < 0.45:
+        action = "HOLD"
+    return action, confidence, "per-asset RandomForest trained on recent hourly bars"
+
+
 def classify(row: pd.Series, news_score: float) -> tuple[str,int,list[str]]:
     score=0; why=[]; close=float(row["Close"]); s20=float(row["SMA20"]); s50=float(row["SMA50"]); rsi=float(row["RSI"]); mom=float(row["momentum_3h_pct"])
     if close>s20>s50: score+=1; why.append("price above moving-average structure")
@@ -164,11 +215,12 @@ def analyze(asset: dict[str,Any], headlines: list[dict[str,str]]) -> dict[str,An
     df=indicators(get_history(asset["ticker"])).dropna(subset=["SMA50","ATR","momentum_3h_pct"])
     if df.empty: raise ValueError("not enough valid bars for indicators")
     row=df.iloc[-1]; ns, titles=sentiment(asset["name"],headlines); action,score,why=classify(row,ns)
+    forecast_action, forecast_confidence, forecast_method = trained_three_hour_forecast(df)
     close=float(row["Close"]); atr=float(row["ATR"]); stop=max(1.5*atr,close*0.001)
     ts=pd.Timestamp(df.index[-1]); ts=ts.tz_localize("UTC") if ts.tzinfo is None else ts.tz_convert("UTC")
     prev=float(df["Close"].iloc[-2]); move=(close/prev-1)*100 if prev else 0.0
     risk=REFERENCE_EQUITY*RISK_FRACTION
-    return {"asset":asset["name"],"ticker":asset["ticker"],"price":close,"bar_time_utc":utc_iso(ts.to_pydatetime()),"action":action,"score":score,"rsi":float(row["RSI"]),"atr":atr,"momentum_3h_pct":float(row["momentum_3h_pct"]),"news_score":ns,"headlines":titles,"reasons":why,"hourly_move_pct":move,"threshold":asset["threshold"],"stop_distance":stop,"stop_loss_long":close-stop,"stop_loss_short":close+stop,"risk_budget_usd":risk,"position_units_estimate":risk/stop if stop>0 else 0}
+    return {"asset":asset["name"],"ticker":asset["ticker"],"price":close,"bar_time_utc":utc_iso(ts.to_pydatetime()),"action":action,"score":score,"forecast_action":forecast_action,"forecast_confidence":forecast_confidence,"forecast_method":forecast_method,"rsi":float(row["RSI"]),"atr":atr,"momentum_3h_pct":float(row["momentum_3h_pct"]),"news_score":ns,"headlines":titles,"reasons":why,"hourly_move_pct":move,"threshold":asset["threshold"],"stop_distance":stop,"stop_loss_long":close-stop,"stop_loss_short":close+stop,"risk_budget_usd":risk,"position_units_estimate":risk/stop if stop>0 else 0}
 
 def session_events(now: datetime) -> list[dict[str,str]]:
     now=now.astimezone(UTC); events=[]; locals_={}
@@ -222,7 +274,7 @@ def analyze_all(state: dict[str,Any], now: datetime) -> None:
     resolve_forecasts(state,results,now)
     day=now.date().isoformat()
     for name,r in results.items():
-        state.setdefault("forecasts",[]).append({"asset":name,"action":r["action"],"entry_price":r["price"],"created_at":utc_iso(now),"expires_at":utc_iso(now+timedelta(hours=3)),"resolved":False})
+        state.setdefault("forecasts",[]).append({"asset":name,"action":r["forecast_action"],"entry_price":r["price"],"created_at":utc_iso(now),"expires_at":utc_iso(now+timedelta(hours=3)),"resolved":False})
         daily_bucket(state,day)["signals"].append({"type":"signal","asset":name,"action":r["action"],"price":r["price"],"score":r["score"],"created_at":utc_iso(now)})
     lines=[
         "QUANT BOT — MARKET SIGNALS",
@@ -234,11 +286,11 @@ def analyze_all(state: dict[str,Any], now: datetime) -> None:
         lines.append(f"{r['asset']} | {r['action']} | Price: {r['price']:.8g}")
     lines.extend(["", "3-HOUR MARKET OUTLOOK"])
     for r in results.values():
-        lines.append(f"{r['asset']} | {r['action']}")
+        lines.append(f"{r['asset']} | {r['forecast_action']} | confidence: {r['forecast_confidence']:.0%}")
     lines.extend([
         "",
-        "Signals are heuristic model classifications, not guarantees or financial advice.",
-        "The 3-hour outlook repeats the model's current directional classification; it is not a separately trained forecasting model.",
+        "Current signals use the existing indicator/news heuristic; the 3-hour outlook uses a separately trained per-asset RandomForest classifier.",
+        "The forecast is trained on recent hourly bars, targets the next 3-hour move relative to ATR, and shows model confidence. It is experimental, not validated trading advice.",
         "Text-only notification. No attachment or broker order.",
     ])
     notify("Quant Bot — Market Signals", "\n".join(lines),3)
