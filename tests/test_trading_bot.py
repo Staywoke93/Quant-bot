@@ -3,6 +3,7 @@ from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import pandas as pd
+import bot
 from bot import indicators, utc_iso, parse_utc, session_events
 
 def sample_ohlc(n=100):
@@ -24,3 +25,23 @@ def test_session_events_returns_structured_events():
     events=session_events(datetime(2026,1,5,8,7,tzinfo=timezone.utc))
     assert isinstance(events,list)
     assert all("key" in e and "title" in e for e in events)
+
+def test_notify_posts_to_configured_ntfy_topic(monkeypatch):
+    captured = {}
+
+    class Response:
+        def raise_for_status(self):
+            return None
+
+    def fake_post(url, **kwargs):
+        captured["url"] = url
+        captured["kwargs"] = kwargs
+        return Response()
+
+    monkeypatch.setattr(bot, "NTFY_SERVER", "https://ntfy.example")
+    monkeypatch.setattr(bot, "NTFY_TOPIC", "Quantz-bot")
+    monkeypatch.setattr(bot.requests, "post", fake_post)
+
+    assert bot.notify("Signal test", "STRONG BUY EUR/USD")
+    assert captured["url"] == "https://ntfy.example/Quantz-bot"
+    assert captured["kwargs"]["data"] == b"STRONG BUY EUR/USD"
