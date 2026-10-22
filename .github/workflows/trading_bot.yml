@@ -30,7 +30,7 @@ jobs:
       TZ: UTC
       PYTHONUNBUFFERED: "1"
       NTFY_SERVER: https://ntfy.sh
-      NTFY_TOPIC: ${{ secrets.NTFY_TOPIC || 'Quantz-pro' }}
+      NTFY_TOPIC: Quantz-bot
       REFERENCE_EQUITY_USD: ${{ vars.REFERENCE_EQUITY_USD || '10000' }}
       RISK_FRACTION: ${{ vars.RISK_FRACTION || '0.005' }}
     steps:
