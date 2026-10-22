@@ -31,7 +31,7 @@ jobs:
       PYTHONUNBUFFERED: "1"
       NTFY_SERVER: https://ntfy.sh
       NTFY_TOPIC: ${{ secrets.NTFY_TOPIC || 'Quantz-pro' }}
-      PAPER_EQUITY_USD: ${{ vars.PAPER_EQUITY_USD || '10000' }}
+      REFERENCE_EQUITY_USD: ${{ vars.REFERENCE_EQUITY_USD || '10000' }}
       RISK_FRACTION: ${{ vars.RISK_FRACTION || '0.005' }}
     steps:
       - name: Check out repository
@@ -70,7 +70,7 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add data/state.json
-            git commit -m "Update Quant Bot paper analysis state [skip ci]"
+            git commit -m "Update Quant Bot analysis state [skip ci]"
             git push origin "HEAD:$GITHUB_REF_NAME"
           else
             echo "No persisted state changes."
