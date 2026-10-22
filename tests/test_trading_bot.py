@@ -39,9 +39,9 @@ def test_notify_posts_to_configured_ntfy_topic(monkeypatch):
         return Response()
 
     monkeypatch.setattr(bot, "NTFY_SERVER", "https://ntfy.example")
-    monkeypatch.setattr(bot, "NTFY_TOPIC", "Quantz-bot")
+    monkeypatch.setattr(bot, "NTFY_TOPIC", "Quantz-pro")
     monkeypatch.setattr(bot.requests, "post", fake_post)
 
     assert bot.notify("Signal test", "STRONG BUY EUR/USD")
-    assert captured["url"] == "https://ntfy.example/Quantz-bot"
+    assert captured["url"] == "https://ntfy.example/Quantz-pro"
     assert captured["kwargs"]["data"] == b"STRONG BUY EUR/USD"
