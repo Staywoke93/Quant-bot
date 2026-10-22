@@ -2,7 +2,7 @@
 
 **Repository:** [Staywoke93/Quant-bot](https://github.com/Staywoke93/Quant-bot)
 
-GitHub Actions-based hourly market-analysis and notification system for major FX pairs, crypto and a gold-futures proxy. It generates research signals, risk estimates, three-hour forecast evaluations, session alerts, volatility alerts, an EOD report and an illustrative CSV backtest. **It does not execute real trades.**
+GitHub Actions-based hourly market-analysis and notification system for major FX pairs, crypto and a gold-futures proxy. It analyses market-data feeds (which may be delayed or incomplete) and generates research signals, illustrative risk estimates, three-hour forecast evaluations, session alerts, volatility alerts, an EOD report and an illustrative CSV backtest. **Paper positions and simulated trade tracking have been removed. This repository still does not connect to a broker or place real orders.**
 
 ## Scope and limitations
 
@@ -13,7 +13,7 @@ GitHub Actions-based hourly market-analysis and notification system for major FX
 - News sentiment is a small word-list heuristic applied to public Google News RSS headlines, not a trained model.
 - Signals combine moving-average structure, RSI, three-hour momentum and headline heuristic. STRONG BUY/SELL/HOLD are classifications, not reliable predictions or advice.
 - ATR stops and risk budgets are illustrations. Estimated units omit contract multipliers, pip values, currency conversion, margin, spread and slippage.
-- Virtual paper positions open only on strong classifications and close at an ATR stop, an opposing strong classification, or a three-hour time limit. Forecasts are separately scored after their horizon. Neither is broker-connected, and neither models real execution/fills.
+- Three-hour directional forecasts are evaluated against later market data; this is signal evaluation, not simulated or broker-executed trading. It does not model spreads, fills, slippage or financing.
 - CSV backtest is a close-only SMA example with one-bar lag and a simple fee assumption; it does not prove an edge.
 
 ## GitHub Actions schedule (UTC)
@@ -26,7 +26,7 @@ Hosted runners are ephemeral, so the workflow persists `data/state.json` by comm
 
 1. Ensure repository Actions are enabled.
 2. In **Settings → Secrets and variables → Actions**, optionally set secret `NTFY_TOPIC`. If absent, the requested topic `Quantz-pro` is used.
-3. Optional repository variables: `PAPER_EQUITY_USD` (default 10000) and `RISK_FRACTION` (default 0.005, clamped to 0.1%–2%).
+3. Optional repository variables: `REFERENCE_EQUITY_USD` (default 10000, used only for illustrative risk estimates) and `RISK_FRACTION` (default 0.005, clamped to 0.1%–2%).
 4. Go to **Actions → Quant Bot market monitor → Run workflow** to test manually.
 5. Inspect Actions logs and your ntfy app; the first run can take several minutes.
 
@@ -52,7 +52,7 @@ python bot.py --mode backtest --csv prices.csv --short-window 20 --long-window 5
 
 ## Files
 
-- `bot.py` — data collection, indicators, session monitor, ntfy delivery, risk estimates, three-hour forecast tracking, virtual paper trading, EOD summary and CSV backtest.
+- `bot.py` — data collection, indicators, session monitor, ntfy delivery, risk estimates, three-hour forecast tracking, EOD summary and CSV backtest.
 - `requirements.txt` — dependencies.
 - `.github/workflows/trading_bot.yml` — UTC schedule and state persistence.
 - `tests/test_trading_bot.py` — unit tests.
@@ -68,4 +68,4 @@ python bot.py --mode backtest --csv prices.csv --short-window 20 --long-window 5
 
 ## Risk disclaimer
 
-Financial markets are risky. Historical results do not guarantee future results. This is a research and notification tool, not investment advice, and has no live execution capability. Validate out of sample before making financial decisions.
+Financial markets are risky. Historical results do not guarantee future results. This is a research and notification tool, not investment advice, and does not place orders. Do not treat its signals or risk estimates as instructions to trade. Validate out of sample before making financial decisions.
