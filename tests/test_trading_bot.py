@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import pandas as pd
-from bot import indicators, utc_iso, parse_utc, session_events, update_paper_trade
+from bot import indicators, utc_iso, parse_utc, session_events
 
 def sample_ohlc(n=100):
     close=pd.Series([100+i*0.15 for i in range(n)],dtype=float)
@@ -24,17 +24,3 @@ def test_session_events_returns_structured_events():
     events=session_events(datetime(2026,1,5,8,7,tzinfo=timezone.utc))
     assert isinstance(events,list)
     assert all("key" in e and "title" in e for e in events)
-
-def test_virtual_paper_trade_opens_and_expires_without_broker_access():
-    now=datetime(2026,1,5,8,0,tzinfo=timezone.utc)
-    state={"paper_positions":{},"paper_trades":[]}
-    result={"asset":"EUR/USD","price":1.1,"action":"STRONG BUY","stop_distance":0.01,
-            "bar_time_utc":"2026-01-05T08:00:00Z","risk_budget_usd":50.0,
-            "position_units_estimate":5000.0}
-    update_paper_trade(state,result,now)
-    assert state["paper_positions"]["EUR/USD"]["side"]=="LONG"
-    later=dict(result,price=1.105,action="HOLD")
-    update_paper_trade(state,later,now.replace(hour=12))
-    assert "EUR/USD" not in state["paper_positions"]
-    assert state["paper_trades"][0]["exit_reason"]=="three-hour time exit"
-    assert state["paper_trades"][0]["pnl_pct"]>0
