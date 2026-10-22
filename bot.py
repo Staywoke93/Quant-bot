@@ -213,6 +213,7 @@ def update_paper_trade(state: dict[str,Any], result: dict[str,Any], now: datetim
     positions=state.setdefault("paper_positions",{})
     trades=state.setdefault("paper_trades",[])
     position=positions.get(name)
+    allow_open=position is None
     if position:
         side=position["side"]
         reason=None
@@ -226,7 +227,8 @@ def update_paper_trade(state: dict[str,Any], result: dict[str,Any], now: datetim
             pnl_pct=((price/entry)-1)*100*(1 if side=="LONG" else -1) if entry else 0.0
             trades.append({**position,"closed_at":utc_iso(now),"exit_price":price,"pnl_pct":pnl_pct,"exit_reason":reason})
             positions.pop(name,None)
-    if name not in positions and action in ("STRONG BUY","STRONG SELL"):
+            allow_open=(reason=="opposite strong signal")
+    if name not in positions and allow_open and action in ("STRONG BUY","STRONG SELL"):
         side="LONG" if action=="STRONG BUY" else "SHORT"
         distance=float(result["stop_distance"])
         stop_price=price-distance if side=="LONG" else price+distance
