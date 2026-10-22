@@ -34,7 +34,8 @@ def main() -> int:
         return 2
 
     print(signals.tail(10).to_string(index=False))
-    print("\\nResearch output only: no trades have been placed.")
+    print()
+    print("Research output only: no trades have been placed.")
     return 0
 
 
