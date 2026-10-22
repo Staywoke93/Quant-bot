@@ -2,7 +2,7 @@
 
 **Repository:** [Staywoke93/Quant-bot](https://github.com/Staywoke93/Quant-bot)
 
-GitHub Actions-based hourly market-analysis and notification system for major FX pairs, crypto and a gold-futures proxy. It analyses market-data feeds (which may be delayed or incomplete) and generates research signals, illustrative risk estimates, three-hour forecast evaluations, session alerts, volatility alerts, an EOD report and an illustrative CSV backtest. **Paper positions and simulated trade tracking have been removed. This repository still does not connect to a broker or place real orders.**
+GitHub Actions-based hourly market-analysis and plain-text notification system for major FX pairs, crypto and a gold-futures proxy. Each notification contains current market signals and a three-hour directional outlook, with no attachment headers. It also records forecast evaluations and supports an illustrative CSV backtest. **Paper positions and simulated trade tracking have been removed. This repository still does not connect to a broker or place real orders.**
 
 ## Scope and limitations
 
@@ -25,7 +25,7 @@ Hosted runners are ephemeral, so the workflow persists `data/state.json` by comm
 ## Setup
 
 1. Ensure repository Actions are enabled.
-2. The GitHub Actions workflow sends notifications to the ntfy topic `Quantz-pro`. The workflow topic is explicitly set in `.github/workflows/trading_bot.yml`.
+2. The GitHub Actions workflow sends one consolidated plain-text market-signal notification to ntfy topic `Quantz-pro`. It lists each available asset's current signal and three-hour directional outlook. Attachment-related headers and tags are not sent.
 3. Optional repository variables: `REFERENCE_EQUITY_USD` (default 10000, used only for illustrative risk estimates) and `RISK_FRACTION` (default 0.005, clamped to 0.1%–2%).
 4. Go to **Actions → Quant Bot market monitor → Run workflow** to test manually.
 5. Inspect Actions logs and your ntfy app; the first run can take several minutes.
@@ -62,7 +62,7 @@ python bot.py --mode backtest --csv prices.csv --short-window 20 --long-window 5
 ## Troubleshooting
 
 - **No signals:** data provider may rate-limit or return too few hourly bars; check Actions logs.
-- **No ntfy message:** check that your ntfy app is subscribed to `Quantz-pro`, service availability and the HTTP outcome in workflow logs. Avoid logging private topics or tokens.
+- **No ntfy message:** check that your ntfy app is subscribed to `Quantz-pro`, service availability and the HTTP outcome in workflow logs. The bot sends a plain-text message only when at least one asset is successfully analysed.
 - **Missed session alert:** checks run hourly and cron timing is not guaranteed.
 - **State commit fails:** confirm Actions has contents write permission and repository rules allow workflow commits.
 
