@@ -42,9 +42,10 @@ def test_notify_posts_to_configured_ntfy_topic(monkeypatch):
     monkeypatch.setattr(bot, "NTFY_TOPIC", "Quantz-pro")
     monkeypatch.setattr(bot.requests, "post", fake_post)
 
-    assert bot.notify("Signal test", "STRONG BUY EUR/USD")
+    assert bot.notify("Quant Bot — Market Signals", "STRONG BUY EUR/USD")
     assert captured["url"] == "https://ntfy.example/Quantz-pro"
     assert captured["kwargs"]["data"] == b"STRONG BUY EUR/USD"
+    assert captured["kwargs"]["headers"]["Title"] == "Quant Bot ? Market Signals"
     assert captured["kwargs"]["headers"]["Content-Type"] == "text/plain; charset=utf-8"
     assert "Tags" not in captured["kwargs"]["headers"]
     assert not any(key.lower() in {"attach", "filename", "markdown"} for key in captured["kwargs"]["headers"])
