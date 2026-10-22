@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent
 STATE_PATH = ROOT / "data" / "state.json"
 LOG = logging.getLogger("quant-bot")
 NTFY_SERVER = os.getenv("NTFY_SERVER", "https://ntfy.sh").rstrip("/")
-NTFY_TOPIC = os.getenv("NTFY_TOPIC", "Quantz-pro").strip()
+NTFY_TOPIC = os.getenv("NTFY_TOPIC", "Quantz-bot").strip()
 REFERENCE_EQUITY = max(0.0, float(os.getenv("REFERENCE_EQUITY_USD", "10000")))
 RISK_FRACTION = min(0.02, max(0.001, float(os.getenv("RISK_FRACTION", "0.005"))))
 TIMEOUT = 18
@@ -246,7 +246,7 @@ def eod_report(state: dict[str,Any], now: datetime) -> None:
     correct=sum(bool(f.get("correct")) for f in directional)
     counts={a:sum(1 for f in daily["signals"] if f.get("type")=="signal" and f.get("action")==a) for a in ("STRONG BUY","STRONG SELL","HOLD")}
     pending=sum(1 for f in state.get("forecasts",[]) if not f.get("resolved") and f.get("created_at","").startswith(day))
-    lines=[f"UTC date: {day}",f"Hourly asset signal records: {sum(counts.values())}",f"STRONG BUY: {counts['STRONG BUY']} | STRONG SELL: {counts['STRONG SELL']} | HOLD: {counts['HOLD']}",f"Resolved directional forecasts: {len(directional)}",f"Directional accuracy: {correct/len(directional)*100:.1f}%" if directional else "Directional accuracy: not enough resolved directional forecasts",f"Pending three-hour forecasts: {pending}",f"Volatility alerts: {len(daily['alerts'])}","","Paper simulation only; no broker paper account or live orders.",f"Generated at {utc_iso(now)}"]
+    lines=[f"UTC date: {day}",f"Hourly asset signal records: {sum(counts.values())}",f"STRONG BUY: {counts['STRONG BUY']} | STRONG SELL: {counts['STRONG SELL']} | HOLD: {counts['HOLD']}",f"Resolved directional forecasts: {len(directional)}",f"Directional accuracy: {correct/len(directional)*100:.1f}%" if directional else "Directional accuracy: not enough resolved directional forecasts",f"Pending three-hour forecasts: {pending}",f"Volatility alerts: {len(daily['alerts'])}","","Forecast evaluation only; no broker connection or orders are used.",f"Generated at {utc_iso(now)}"]
     if notify(f"Quant Bot EOD review — {day}","\n".join(lines),3,"memo"): daily["eod_sent"]=True
     for old in sorted(state.get("daily",{}))[:-30]: del state["daily"][old]
 
