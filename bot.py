@@ -77,7 +77,7 @@ def notify(title: str, message: str, priority: int = 3, tags: str = "chart_with_
     try:
         response = requests.post(
             f"{NTFY_SERVER}/{NTFY_TOPIC}", data=message.encode("utf-8"),
-            headers={"Title":title[:250],"Priority":str(max(1,min(5,priority))),"Tags":tags[:120],"Content-Type":"text/plain; charset=utf-8","User-Agent":UA},
+            headers={"Title":title[:250],"Priority":str(max(1,min(5,priority))),"Content-Type":"text/plain; charset=utf-8","User-Agent":UA},
             timeout=TIMEOUT,
         )
         response.raise_for_status()
@@ -216,27 +216,31 @@ def analyze_all(state: dict[str,Any], now: datetime) -> None:
         except Exception as exc:
             LOG.warning("Could not analyse %s (%s)",asset["name"],type(exc).__name__)
     if not results:
-        notify("Quant Bot data warning",f"No assets could be analysed. Inspect GitHub Actions logs. UTC: {utc_iso(now)}",4,"warning")
+        LOG.warning("No assets could be analysed; see GitHub Actions logs")
         return
-    resolve_forecasts(state,results,now); urgent=[]
+    resolve_forecasts(state,results,now)
     day=now.date().isoformat()
     for name,r in results.items():
-        if abs(r["hourly_move_pct"])>=r["threshold"]:
-            key=f"{day}:{now.hour:02d}"
-            if state.setdefault("volatility_alerts",{}).get(name)!=key:
-                msg=f"Asset: {name}\nHourly move: {r['hourly_move_pct']:+.2f}%\nLast price: {r['price']:.8g}\nBar UTC: {r['bar_time_utc']}\nThreshold: ±{r['threshold']:.2f}%\nVerify data/spreads before acting; no order was placed."
-                if notify(f"URGENT volatility: {name}",msg,5,"rotating_light,chart_with_upwards_trend"):
-                    state["volatility_alerts"][name]=key; daily_bucket(state,day)["alerts"].append({"asset":name,"move_pct":r["hourly_move_pct"],"at":utc_iso(now)}); urgent.append(name)
         state.setdefault("forecasts",[]).append({"asset":name,"action":r["action"],"entry_price":r["price"],"created_at":utc_iso(now),"expires_at":utc_iso(now+timedelta(hours=3)),"resolved":False})
         daily_bucket(state,day)["signals"].append({"type":"signal","asset":name,"action":r["action"],"price":r["price"],"score":r["score"],"created_at":utc_iso(now)})
-    lines=[f"UTC evaluation: {utc_iso(now)}","Source: Yahoo Finance hourly bars; forecast horizon: 3 hours",""]
+    lines=[
+        "QUANT BOT — MARKET SIGNALS",
+        f"Updated (UTC): {utc_iso(now)}",
+        "",
+        "CURRENT MARKET SIGNALS",
+    ]
     for r in results.values():
-        lines.append(f"{r['asset']}: {r['action']} | price {r['price']:.8g} | score {r['score']:+d} | RSI {r['rsi']:.1f} | 3h momentum {r['momentum_3h_pct']:+.2f}%")
-        lines.append(f"  ATR {r['atr']:.6g}; stop distance {r['stop_distance']:.6g}; risk budget USD {r['risk_budget_usd']:.2f}; theoretical units ~{r['position_units_estimate']:.5g}")
-        lines.append(f"  Rationale: {'; '.join(r['reasons'])}")
-        if r["headlines"]: lines.append(f"  Related headlines: {' | '.join(r['headlines'][:2])}")
-    lines.extend(["","Risk sizing is illustrative and excludes contract specs, pip value, FX conversion, margin, spread and slippage.","Signals are heuristic research classifications, not advice. This bot does not connect to a broker or place orders."])
-    notify("Quant Bot hourly market analysis","\n".join(lines),3,"chart_with_upwards_trend")
+        lines.append(f"{r['asset']} | {r['action']} | Price: {r['price']:.8g}")
+    lines.extend(["", "3-HOUR MARKET OUTLOOK"])
+    for r in results.values():
+        lines.append(f"{r['asset']} | {r['action']}")
+    lines.extend([
+        "",
+        "Signals are heuristic model classifications, not guarantees or financial advice.",
+        "The 3-hour outlook repeats the model's current directional classification; it is not a separately trained forecasting model.",
+        "Text-only notification. No attachment or broker order.",
+    ])
+    notify("Quant Bot — Market Signals", "\n".join(lines),3)
 
 def eod_report(state: dict[str,Any], now: datetime) -> None:
     day=now.date().isoformat(); daily=daily_bucket(state,day)
@@ -247,7 +251,8 @@ def eod_report(state: dict[str,Any], now: datetime) -> None:
     counts={a:sum(1 for f in daily["signals"] if f.get("type")=="signal" and f.get("action")==a) for a in ("STRONG BUY","STRONG SELL","HOLD")}
     pending=sum(1 for f in state.get("forecasts",[]) if not f.get("resolved") and f.get("created_at","").startswith(day))
     lines=[f"UTC date: {day}",f"Hourly asset signal records: {sum(counts.values())}",f"STRONG BUY: {counts['STRONG BUY']} | STRONG SELL: {counts['STRONG SELL']} | HOLD: {counts['HOLD']}",f"Resolved directional forecasts: {len(directional)}",f"Directional accuracy: {correct/len(directional)*100:.1f}%" if directional else "Directional accuracy: not enough resolved directional forecasts",f"Pending three-hour forecasts: {pending}",f"Volatility alerts: {len(daily['alerts'])}","","Forecast evaluation only; no broker connection or orders are used.",f"Generated at {utc_iso(now)}"]
-    if notify(f"Quant Bot EOD review — {day}","\n".join(lines),3,"memo"): daily["eod_sent"]=True
+    LOG.info("EOD review calculated for %s; separate EOD notifications are disabled",day)
+    daily["eod_sent"]=True
     for old in sorted(state.get("daily",{}))[:-30]: del state["daily"][old]
 
 def backtest_csv(path: Path, short: int, long: int, fee_bps: float) -> int:
@@ -272,7 +277,7 @@ def backtest_csv(path: Path, short: int, long: int, fee_bps: float) -> int:
 def run(mode: str) -> int:
     now=now_utc(); LOG.info("Starting mode=%s at %s",mode,utc_iso(now))
     state=load_state()
-    if mode in ("all","hourly","sessions","eod"): monitor_sessions(state,now)
+    # Only the consolidated plain-text market-signal notification is sent.
     if mode in ("all","hourly"): analyze_all(state,now)
     if mode in ("all","eod"): eod_report(state,now)
     save_state(state); LOG.info("Finished at %s",utc_iso()); return 0
