@@ -13,7 +13,7 @@ GitHub Actions-based hourly market-analysis and notification system for major FX
 - News sentiment is a small word-list heuristic applied to public Google News RSS headlines, not a trained model.
 - Signals combine moving-average structure, RSI, three-hour momentum and headline heuristic. STRONG BUY/SELL/HOLD are classifications, not reliable predictions or advice.
 - ATR stops and risk budgets are illustrations. Estimated units omit contract multipliers, pip values, currency conversion, margin, spread and slippage.
-- Paper evaluation tracks forecasts to their three-hour horizon. It is not a broker-connected paper account and cannot model execution/fills.
+- Virtual paper positions open only on strong classifications and close at an ATR stop, an opposing strong classification, or a three-hour time limit. Forecasts are separately scored after their horizon. Neither is broker-connected, and neither models real execution/fills.
 - CSV backtest is a close-only SMA example with one-bar lag and a simple fee assumption; it does not prove an edge.
 
 ## GitHub Actions schedule (UTC)
@@ -52,7 +52,7 @@ python bot.py --mode backtest --csv prices.csv --short-window 20 --long-window 5
 
 ## Files
 
-- `bot.py` — data collection, indicators, session monitor, ntfy delivery, risk estimates, three-hour forecast tracking, EOD summary and CSV backtest.
+- `bot.py` — data collection, indicators, session monitor, ntfy delivery, risk estimates, three-hour forecast tracking, virtual paper trading, EOD summary and CSV backtest.
 - `requirements.txt` — dependencies.
 - `.github/workflows/trading_bot.yml` — UTC schedule and state persistence.
 - `tests/test_trading_bot.py` — unit tests.
