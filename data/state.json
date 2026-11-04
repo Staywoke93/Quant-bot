@@ -14381,143 +14381,198 @@
           "price": 4074.800048828125,
           "score": 2,
           "type": "signal"
+        },
+        {
+          "action": "HOLD",
+          "asset": "EUR/USD",
+          "correct": true,
+          "created_at": "2026-11-04T17:08:14Z",
+          "realized_change_pct": 0.05617768794632383,
+          "resolved_at": "2026-11-04T23:00:00Z",
+          "type": "forecast_result"
+        },
+        {
+          "action": "HOLD",
+          "asset": "GBP/USD",
+          "correct": true,
+          "created_at": "2026-11-04T17:08:14Z",
+          "realized_change_pct": 0.09163922654722434,
+          "resolved_at": "2026-11-04T23:00:00Z",
+          "type": "forecast_result"
+        },
+        {
+          "action": "HOLD",
+          "asset": "USD/JPY",
+          "correct": true,
+          "created_at": "2026-11-04T17:08:14Z",
+          "realized_change_pct": 0.037902913609411115,
+          "resolved_at": "2026-11-04T23:00:00Z",
+          "type": "forecast_result"
+        },
+        {
+          "action": "HOLD",
+          "asset": "AUD/USD",
+          "correct": true,
+          "created_at": "2026-11-04T17:08:14Z",
+          "realized_change_pct": -0.1541159562644001,
+          "resolved_at": "2026-11-04T23:00:00Z",
+          "type": "forecast_result"
+        },
+        {
+          "action": "HOLD",
+          "asset": "USD/CAD",
+          "correct": true,
+          "created_at": "2026-11-04T17:08:14Z",
+          "realized_change_pct": 0.02648222814622958,
+          "resolved_at": "2026-11-04T23:00:00Z",
+          "type": "forecast_result"
+        },
+        {
+          "action": "HOLD",
+          "asset": "USD/CHF",
+          "correct": true,
+          "created_at": "2026-11-04T17:08:14Z",
+          "realized_change_pct": -0.018370094566211304,
+          "resolved_at": "2026-11-04T23:00:00Z",
+          "type": "forecast_result"
+        },
+        {
+          "action": "HOLD",
+          "asset": "NZD/USD",
+          "correct": true,
+          "created_at": "2026-11-04T17:08:14Z",
+          "realized_change_pct": -0.01687644808505695,
+          "resolved_at": "2026-11-04T23:00:00Z",
+          "type": "forecast_result"
+        },
+        {
+          "action": "HOLD",
+          "asset": "BTC/USD",
+          "correct": true,
+          "created_at": "2026-11-04T17:08:14Z",
+          "realized_change_pct": 0.05343199535083887,
+          "resolved_at": "2026-11-04T23:00:00Z",
+          "type": "forecast_result"
+        },
+        {
+          "action": "HOLD",
+          "asset": "ETH/USD",
+          "correct": true,
+          "created_at": "2026-11-04T17:08:14Z",
+          "realized_change_pct": -0.20140346946887488,
+          "resolved_at": "2026-11-04T23:00:00Z",
+          "type": "forecast_result"
+        },
+        {
+          "action": "STRONG BUY",
+          "asset": "SOL/USD",
+          "correct": false,
+          "created_at": "2026-11-04T17:08:14Z",
+          "realized_change_pct": -0.8097153165893767,
+          "resolved_at": "2026-11-04T23:00:00Z",
+          "type": "forecast_result"
+        },
+        {
+          "action": "HOLD",
+          "asset": "Gold (GC futures proxy)",
+          "correct": true,
+          "created_at": "2026-11-04T17:08:14Z",
+          "realized_change_pct": -0.06871622643006559,
+          "resolved_at": "2026-11-04T23:00:00Z",
+          "type": "forecast_result"
+        },
+        {
+          "action": "HOLD",
+          "asset": "EUR/USD",
+          "created_at": "2026-11-04T23:35:27Z",
+          "price": 1.1235954761505127,
+          "score": 0,
+          "type": "signal"
+        },
+        {
+          "action": "HOLD",
+          "asset": "GBP/USD",
+          "created_at": "2026-11-04T23:35:27Z",
+          "price": 1.3476181030273438,
+          "score": 2,
+          "type": "signal"
+        },
+        {
+          "action": "HOLD",
+          "asset": "USD/JPY",
+          "created_at": "2026-11-04T23:35:27Z",
+          "price": 158.39300537109375,
+          "score": 2,
+          "type": "signal"
+        },
+        {
+          "action": "HOLD",
+          "asset": "AUD/USD",
+          "created_at": "2026-11-04T23:35:27Z",
+          "price": 0.7005254030227661,
+          "score": 1,
+          "type": "signal"
+        },
+        {
+          "action": "HOLD",
+          "asset": "USD/CAD",
+          "created_at": "2026-11-04T23:35:27Z",
+          "price": 1.3971799612045288,
+          "score": 0,
+          "type": "signal"
+        },
+        {
+          "action": "HOLD",
+          "asset": "USD/CHF",
+          "created_at": "2026-11-04T23:35:27Z",
+          "price": 0.8165299892425537,
+          "score": -2,
+          "type": "signal"
+        },
+        {
+          "action": "HOLD",
+          "asset": "NZD/USD",
+          "created_at": "2026-11-04T23:35:27Z",
+          "price": 0.5625246167182922,
+          "score": 2,
+          "type": "signal"
+        },
+        {
+          "action": "HOLD",
+          "asset": "BTC/USD",
+          "created_at": "2026-11-04T23:35:27Z",
+          "price": 80460.609375,
+          "score": 2,
+          "type": "signal"
+        },
+        {
+          "action": "HOLD",
+          "asset": "ETH/USD",
+          "created_at": "2026-11-04T23:35:27Z",
+          "price": 2423.139892578125,
+          "score": 2,
+          "type": "signal"
+        },
+        {
+          "action": "STRONG BUY",
+          "asset": "SOL/USD",
+          "created_at": "2026-11-04T23:35:27Z",
+          "price": 95.55000305175781,
+          "score": 3,
+          "type": "signal"
+        },
+        {
+          "action": "HOLD",
+          "asset": "Gold (GC futures proxy)",
+          "created_at": "2026-11-04T23:35:27Z",
+          "price": 4072.0,
+          "score": 1,
+          "type": "signal"
         }
       ]
     }
   },
   "forecasts": [
-    {
-      "action": "HOLD",
-      "asset": "NZD/USD",
-      "correct": true,
-      "created_at": "2026-10-26T12:50:04Z",
-      "entry_price": 0.5685371160507202,
-      "exit_price": 0.5684401988983154,
-      "expires_at": "2026-10-26T15:50:04Z",
-      "realized_change_pct": -0.017046759071426276,
-      "resolved": true,
-      "resolved_at": "2026-10-26T19:00:00Z"
-    },
-    {
-      "action": "HOLD",
-      "asset": "BTC/USD",
-      "correct": false,
-      "created_at": "2026-10-26T12:50:04Z",
-      "entry_price": 80258.390625,
-      "exit_price": 79911.859375,
-      "expires_at": "2026-10-26T15:50:04Z",
-      "realized_change_pct": -0.43176949762067096,
-      "resolved": true,
-      "resolved_at": "2026-10-26T19:00:00Z"
-    },
-    {
-      "action": "HOLD",
-      "asset": "ETH/USD",
-      "correct": false,
-      "created_at": "2026-10-26T12:50:04Z",
-      "entry_price": 2322.02001953125,
-      "exit_price": 2313.81005859375,
-      "expires_at": "2026-10-26T15:50:04Z",
-      "realized_change_pct": -0.35356977409511936,
-      "resolved": true,
-      "resolved_at": "2026-10-26T19:00:00Z"
-    },
-    {
-      "action": "HOLD",
-      "asset": "SOL/USD",
-      "correct": false,
-      "created_at": "2026-10-26T12:50:04Z",
-      "entry_price": 101.54000091552734,
-      "exit_price": 100.43000030517578,
-      "expires_at": "2026-10-26T15:50:04Z",
-      "realized_change_pct": -1.0931658463101512,
-      "resolved": true,
-      "resolved_at": "2026-10-26T19:00:00Z"
-    },
-    {
-      "action": "HOLD",
-      "asset": "Gold (GC futures proxy)",
-      "correct": true,
-      "created_at": "2026-10-26T12:50:04Z",
-      "entry_price": 4031.699951171875,
-      "exit_price": 4023.699951171875,
-      "expires_at": "2026-10-26T15:50:04Z",
-      "realized_change_pct": -0.19842746476395057,
-      "resolved": true,
-      "resolved_at": "2026-10-26T19:00:00Z"
-    },
-    {
-      "action": "HOLD",
-      "asset": "EUR/USD",
-      "correct": true,
-      "created_at": "2026-10-26T19:12:37Z",
-      "entry_price": 1.11831796169281,
-      "exit_price": 1.1175681352615356,
-      "expires_at": "2026-10-26T22:12:37Z",
-      "realized_change_pct": -0.06704948475828587,
-      "resolved": true,
-      "resolved_at": "2026-10-26T23:00:00Z"
-    },
-    {
-      "action": "HOLD",
-      "asset": "GBP/USD",
-      "correct": true,
-      "created_at": "2026-10-26T19:12:37Z",
-      "entry_price": 1.3346501588821411,
-      "exit_price": 1.334294080734253,
-      "expires_at": "2026-10-26T22:12:37Z",
-      "realized_change_pct": -0.026679511894445174,
-      "resolved": true,
-      "resolved_at": "2026-10-26T23:00:00Z"
-    },
-    {
-      "action": "HOLD",
-      "asset": "USD/JPY",
-      "correct": true,
-      "created_at": "2026-10-26T19:12:37Z",
-      "entry_price": 157.45799255371094,
-      "exit_price": 157.57400512695312,
-      "expires_at": "2026-10-26T22:12:37Z",
-      "realized_change_pct": 0.07367842772580957,
-      "resolved": true,
-      "resolved_at": "2026-10-26T23:00:00Z"
-    },
-    {
-      "action": "HOLD",
-      "asset": "AUD/USD",
-      "correct": true,
-      "created_at": "2026-10-26T19:12:37Z",
-      "entry_price": 0.702049970626831,
-      "exit_price": 0.7019021511077881,
-      "expires_at": "2026-10-26T22:12:37Z",
-      "realized_change_pct": -0.021055412752313263,
-      "resolved": true,
-      "resolved_at": "2026-10-26T23:00:00Z"
-    },
-    {
-      "action": "HOLD",
-      "asset": "USD/CAD",
-      "correct": true,
-      "created_at": "2026-10-26T19:12:37Z",
-      "entry_price": 1.4022200107574463,
-      "exit_price": 1.401319980621338,
-      "expires_at": "2026-10-26T22:12:37Z",
-      "realized_change_pct": -0.06418608557884342,
-      "resolved": true,
-      "resolved_at": "2026-10-26T23:00:00Z"
-    },
-    {
-      "action": "HOLD",
-      "asset": "USD/CHF",
-      "correct": true,
-      "created_at": "2026-10-26T19:12:37Z",
-      "entry_price": 0.8274800181388855,
-      "exit_price": 0.827750027179718,
-      "expires_at": "2026-10-26T22:12:37Z",
-      "realized_change_pct": 0.03263027927125073,
-      "resolved": true,
-      "resolved_at": "2026-10-26T23:00:00Z"
-    },
     {
       "action": "HOLD",
       "asset": "NZD/USD",
@@ -20389,89 +20444,221 @@
     {
       "action": "HOLD",
       "asset": "EUR/USD",
+      "correct": true,
       "created_at": "2026-11-04T17:08:14Z",
       "entry_price": 1.12296462059021,
+      "exit_price": 1.1235954761505127,
       "expires_at": "2026-11-04T20:08:14Z",
+      "realized_change_pct": 0.05617768794632383,
+      "resolved": true,
+      "resolved_at": "2026-11-04T23:00:00Z"
+    },
+    {
+      "action": "HOLD",
+      "asset": "GBP/USD",
+      "correct": true,
+      "created_at": "2026-11-04T17:08:14Z",
+      "entry_price": 1.3463842868804932,
+      "exit_price": 1.3476181030273438,
+      "expires_at": "2026-11-04T20:08:14Z",
+      "realized_change_pct": 0.09163922654722434,
+      "resolved": true,
+      "resolved_at": "2026-11-04T23:00:00Z"
+    },
+    {
+      "action": "HOLD",
+      "asset": "USD/JPY",
+      "correct": true,
+      "created_at": "2026-11-04T17:08:14Z",
+      "entry_price": 158.33299255371094,
+      "exit_price": 158.39300537109375,
+      "expires_at": "2026-11-04T20:08:14Z",
+      "realized_change_pct": 0.037902913609411115,
+      "resolved": true,
+      "resolved_at": "2026-11-04T23:00:00Z"
+    },
+    {
+      "action": "HOLD",
+      "asset": "AUD/USD",
+      "correct": true,
+      "created_at": "2026-11-04T17:08:14Z",
+      "entry_price": 0.7016066908836365,
+      "exit_price": 0.7005254030227661,
+      "expires_at": "2026-11-04T20:08:14Z",
+      "realized_change_pct": -0.1541159562644001,
+      "resolved": true,
+      "resolved_at": "2026-11-04T23:00:00Z"
+    },
+    {
+      "action": "HOLD",
+      "asset": "USD/CAD",
+      "correct": true,
+      "created_at": "2026-11-04T17:08:14Z",
+      "entry_price": 1.3968100547790527,
+      "exit_price": 1.3971799612045288,
+      "expires_at": "2026-11-04T20:08:14Z",
+      "realized_change_pct": 0.02648222814622958,
+      "resolved": true,
+      "resolved_at": "2026-11-04T23:00:00Z"
+    },
+    {
+      "action": "HOLD",
+      "asset": "USD/CHF",
+      "correct": true,
+      "created_at": "2026-11-04T17:08:14Z",
+      "entry_price": 0.8166800141334534,
+      "exit_price": 0.8165299892425537,
+      "expires_at": "2026-11-04T20:08:14Z",
+      "realized_change_pct": -0.018370094566211304,
+      "resolved": true,
+      "resolved_at": "2026-11-04T23:00:00Z"
+    },
+    {
+      "action": "HOLD",
+      "asset": "NZD/USD",
+      "correct": true,
+      "created_at": "2026-11-04T17:08:14Z",
+      "entry_price": 0.5626195669174194,
+      "exit_price": 0.5625246167182922,
+      "expires_at": "2026-11-04T20:08:14Z",
+      "realized_change_pct": -0.01687644808505695,
+      "resolved": true,
+      "resolved_at": "2026-11-04T23:00:00Z"
+    },
+    {
+      "action": "HOLD",
+      "asset": "BTC/USD",
+      "correct": true,
+      "created_at": "2026-11-04T17:08:14Z",
+      "entry_price": 80417.640625,
+      "exit_price": 80460.609375,
+      "expires_at": "2026-11-04T20:08:14Z",
+      "realized_change_pct": 0.05343199535083887,
+      "resolved": true,
+      "resolved_at": "2026-11-04T23:00:00Z"
+    },
+    {
+      "action": "HOLD",
+      "asset": "ETH/USD",
+      "correct": true,
+      "created_at": "2026-11-04T17:08:14Z",
+      "entry_price": 2428.030029296875,
+      "exit_price": 2423.139892578125,
+      "expires_at": "2026-11-04T20:08:14Z",
+      "realized_change_pct": -0.20140346946887488,
+      "resolved": true,
+      "resolved_at": "2026-11-04T23:00:00Z"
+    },
+    {
+      "action": "STRONG BUY",
+      "asset": "SOL/USD",
+      "correct": false,
+      "created_at": "2026-11-04T17:08:14Z",
+      "entry_price": 96.33000183105469,
+      "exit_price": 95.55000305175781,
+      "expires_at": "2026-11-04T20:08:14Z",
+      "realized_change_pct": -0.8097153165893767,
+      "resolved": true,
+      "resolved_at": "2026-11-04T23:00:00Z"
+    },
+    {
+      "action": "HOLD",
+      "asset": "Gold (GC futures proxy)",
+      "correct": true,
+      "created_at": "2026-11-04T17:08:14Z",
+      "entry_price": 4074.800048828125,
+      "exit_price": 4072.0,
+      "expires_at": "2026-11-04T20:08:14Z",
+      "realized_change_pct": -0.06871622643006559,
+      "resolved": true,
+      "resolved_at": "2026-11-04T23:00:00Z"
+    },
+    {
+      "action": "HOLD",
+      "asset": "EUR/USD",
+      "created_at": "2026-11-04T23:35:27Z",
+      "entry_price": 1.1235954761505127,
+      "expires_at": "2026-11-05T02:35:27Z",
       "resolved": false
     },
     {
       "action": "HOLD",
       "asset": "GBP/USD",
-      "created_at": "2026-11-04T17:08:14Z",
-      "entry_price": 1.3463842868804932,
-      "expires_at": "2026-11-04T20:08:14Z",
+      "created_at": "2026-11-04T23:35:27Z",
+      "entry_price": 1.3476181030273438,
+      "expires_at": "2026-11-05T02:35:27Z",
       "resolved": false
     },
     {
       "action": "HOLD",
       "asset": "USD/JPY",
-      "created_at": "2026-11-04T17:08:14Z",
-      "entry_price": 158.33299255371094,
-      "expires_at": "2026-11-04T20:08:14Z",
+      "created_at": "2026-11-04T23:35:27Z",
+      "entry_price": 158.39300537109375,
+      "expires_at": "2026-11-05T02:35:27Z",
       "resolved": false
     },
     {
       "action": "HOLD",
       "asset": "AUD/USD",
-      "created_at": "2026-11-04T17:08:14Z",
-      "entry_price": 0.7016066908836365,
-      "expires_at": "2026-11-04T20:08:14Z",
+      "created_at": "2026-11-04T23:35:27Z",
+      "entry_price": 0.7005254030227661,
+      "expires_at": "2026-11-05T02:35:27Z",
       "resolved": false
     },
     {
       "action": "HOLD",
       "asset": "USD/CAD",
-      "created_at": "2026-11-04T17:08:14Z",
-      "entry_price": 1.3968100547790527,
-      "expires_at": "2026-11-04T20:08:14Z",
+      "created_at": "2026-11-04T23:35:27Z",
+      "entry_price": 1.3971799612045288,
+      "expires_at": "2026-11-05T02:35:27Z",
       "resolved": false
     },
     {
       "action": "HOLD",
       "asset": "USD/CHF",
-      "created_at": "2026-11-04T17:08:14Z",
-      "entry_price": 0.8166800141334534,
-      "expires_at": "2026-11-04T20:08:14Z",
+      "created_at": "2026-11-04T23:35:27Z",
+      "entry_price": 0.8165299892425537,
+      "expires_at": "2026-11-05T02:35:27Z",
       "resolved": false
     },
     {
       "action": "HOLD",
       "asset": "NZD/USD",
-      "created_at": "2026-11-04T17:08:14Z",
-      "entry_price": 0.5626195669174194,
-      "expires_at": "2026-11-04T20:08:14Z",
+      "created_at": "2026-11-04T23:35:27Z",
+      "entry_price": 0.5625246167182922,
+      "expires_at": "2026-11-05T02:35:27Z",
       "resolved": false
     },
     {
       "action": "HOLD",
       "asset": "BTC/USD",
-      "created_at": "2026-11-04T17:08:14Z",
-      "entry_price": 80417.640625,
-      "expires_at": "2026-11-04T20:08:14Z",
+      "created_at": "2026-11-04T23:35:27Z",
+      "entry_price": 80460.609375,
+      "expires_at": "2026-11-05T02:35:27Z",
       "resolved": false
     },
     {
       "action": "HOLD",
       "asset": "ETH/USD",
-      "created_at": "2026-11-04T17:08:14Z",
-      "entry_price": 2428.030029296875,
-      "expires_at": "2026-11-04T20:08:14Z",
+      "created_at": "2026-11-04T23:35:27Z",
+      "entry_price": 2423.139892578125,
+      "expires_at": "2026-11-05T02:35:27Z",
       "resolved": false
     },
     {
-      "action": "STRONG BUY",
+      "action": "HOLD",
       "asset": "SOL/USD",
-      "created_at": "2026-11-04T17:08:14Z",
-      "entry_price": 96.33000183105469,
-      "expires_at": "2026-11-04T20:08:14Z",
+      "created_at": "2026-11-04T23:35:27Z",
+      "entry_price": 95.55000305175781,
+      "expires_at": "2026-11-05T02:35:27Z",
       "resolved": false
     },
     {
       "action": "HOLD",
       "asset": "Gold (GC futures proxy)",
-      "created_at": "2026-11-04T17:08:14Z",
-      "entry_price": 4074.800048828125,
-      "expires_at": "2026-11-04T20:08:14Z",
+      "created_at": "2026-11-04T23:35:27Z",
+      "entry_price": 4072.0,
+      "expires_at": "2026-11-05T02:35:27Z",
       "resolved": false
     }
   ],
